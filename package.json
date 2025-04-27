@@ -17,6 +17,7 @@
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/react": "^6.1.15",
     "firebase": "^11.3.0",
+    "jspdf": "^3.0.1",
     "react": "^19.0.0",
     "react-calendar": "^5.1.0",
     "react-dom": "^19.0.0",

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
-import { db } from './firebase'; // Assuming you've already set up Firebase elsewhere
+import { db } from './firebase';
+import jsPDF from 'jspdf'; // 👈 Import jsPDF
 
 export default function Shopping() {
   const [shoppingList, setShoppingList] = useState([]);
 
-  // Fetch shopping list from Firebase
   const fetchShoppingList = async () => {
     try {
-      const currentUserUsername = localStorage.getItem('username'); // Assuming this is how you handle the logged-in user
+      const currentUserUsername = localStorage.getItem('username');
       if (!currentUserUsername) {
         alert('Please log in first');
         return;
@@ -27,20 +27,31 @@ export default function Shopping() {
     }
   };
 
-  // Delete item from shopping list
   const deleteItem = async (id) => {
     try {
       const currentUserUsername = localStorage.getItem('username');
       const itemRef = doc(db, 'users', currentUserUsername, 'shoppingList', id);
       await deleteDoc(itemRef);
-      // Refresh the list after deletion
       fetchShoppingList();
     } catch (error) {
       console.error('Error deleting item:', error);
     }
   };
 
-  // Load shopping list when the component mounts
+  const downloadPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text('Shopping List', 20, 20);
+
+    let y = 30;
+    shoppingList.forEach((item, index) => {
+      doc.text(`${index + 1}. ${item.name} - Quantity: ${item.quantity}`, 20, y);
+      y += 10;
+    });
+
+    doc.save('shopping-list.pdf');
+  };
+
   useEffect(() => {
     fetchShoppingList();
   }, []);
@@ -48,6 +59,7 @@ export default function Shopping() {
   return (
     <div className="container">
       <h2>Shopping List</h2>
+      <button onClick={downloadPDF}>Download as PDF</button> {/* 👈 New button */}
       <ul id="shoppingList">
         {shoppingList.length === 0 ? (
           <li>No items found in your shopping list.</li>
