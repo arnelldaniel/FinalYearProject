@@ -148,31 +148,47 @@
       const inventorySnapshot = await getDocs(inventoryRef);
       const inventoryItems = inventorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     
-      // Check if all ingredients are available in the inventory
       const missingIngredients = [];
+      const expiredIngredients = [];
     
-      // Check each ingredient in the recipe against the inventory
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Normalize time for comparison
+    
       for (let ingredient of recipe.ingredients) {
-        const itemInInventory = inventoryItems.find(item => item.name.toLowerCase() === ingredient.ingredient.toLowerCase());
+        const itemInInventory = inventoryItems.find(item =>
+          item.name.toLowerCase() === ingredient.ingredient.toLowerCase()
+        );
     
         if (!itemInInventory) {
           missingIngredients.push(ingredient.ingredient);
+        } else {
+          const expirationDate = new Date(itemInInventory.expiration);
+          expirationDate.setHours(0, 0, 0, 0);
+          if (expirationDate < today) {
+            expiredIngredients.push(ingredient.ingredient);
+          }
         }
       }
     
-      if (missingIngredients.length > 0) {
-        // Some ingredients are missing
-        alert(`Missing ingredients: ${missingIngredients.join(', ')}`);
+      if (missingIngredients.length > 0 || expiredIngredients.length > 0) {
+        let message = '';
+        if (missingIngredients.length > 0) {
+          message += `Missing ingredients: ${missingIngredients.join(', ')}.\n`;
+        }
+        if (expiredIngredients.length > 0) {
+          message += `Expired ingredients: ${expiredIngredients.join(', ')}.\n`;
+        }
+        alert(message.trim());
         return;
       }
     
-      // If all ingredients are available, proceed with making the recipe and removing from inventory
+      // All good: delete used ingredients from inventory
       for (let ingredient of recipe.ingredients) {
-        const itemInInventory = inventoryItems.find(item => item.name.toLowerCase() === ingredient.ingredient.toLowerCase());
-    
+        const itemInInventory = inventoryItems.find(item =>
+          item.name.toLowerCase() === ingredient.ingredient.toLowerCase()
+        );
         if (itemInInventory) {
           try {
-            // Remove item from inventory
             await deleteDoc(doc(db, 'users', currentUserUsername, 'inventory', itemInInventory.id));
           } catch (error) {
             console.error('Error removing ingredient from inventory:', error);
