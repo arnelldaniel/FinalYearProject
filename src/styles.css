@@ -8,6 +8,10 @@
   justify-content: center;
   align-items: center;
 }
+#categoryFilter {
+  margin-left: 10px !important;
+  
+}
 
 /* Container for the forms */
 .login-register-page .container {
@@ -289,6 +293,11 @@ li button:hover {
   background-color: #45a049;
   transform: scale(1.05);
 }
+#search {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
 
 /* Global dark mode styling */
 body.dark-mode {

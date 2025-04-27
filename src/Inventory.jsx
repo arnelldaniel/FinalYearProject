@@ -3,11 +3,18 @@ import { auth, db } from './firebase'; // Import Firebase config
 import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import { Bar } from 'react-chartjs-2'; // Importing the Bar chart component
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js'; 
+
+// Registering chart.js components for the bar chart
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 function Inventory() {
   const [ingredientName, setIngredientName] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [category, setCategory] = useState('');
+  const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [selectedCategory, setSelectedCategory] = useState(''); // Selected category for filtering
   const [inventory, setInventory] = useState([]);
   const [events, setEvents] = useState([]);
   
@@ -91,10 +98,40 @@ function Inventory() {
     }
   };
 
+  // Filter inventory based on selected category
+  const filteredInventory = inventory.filter((item) => {
+    const matchesCategory = selectedCategory ? item.category === selectedCategory : true;
+    const matchesSearchQuery = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearchQuery;
+  });
+
   // Run loadInventory once when the component mounts
   useEffect(() => {
     loadInventory();
   }, []);
+
+  // Analytics - Expiration Status Breakdown
+  const expirationStatusCounts = filteredInventory.reduce(
+    (acc, item) => {
+      const status = getExpirationColor(item.expiration);
+      if (status === '#FF0000') acc.expired += 1;
+      if (status === '#FFA500') acc.expiringSoon += 1;
+      if (status === '#008000') acc.good += 1;
+      return acc;
+    },
+    { expired: 0, expiringSoon: 0, good: 0 }
+  );
+
+  const expirationChartData = {
+    labels: ['Expired', 'Expiring Soon', 'Good'],
+    datasets: [
+      {
+        label: 'Expiration Status',
+        data: [expirationStatusCounts.expired, expirationStatusCounts.expiringSoon, expirationStatusCounts.good],
+        backgroundColor: ['#FF0000', '#FFA500', '#008000'],
+      },
+    ],
+  };
 
   return (
     <div className="container">
@@ -140,13 +177,37 @@ function Inventory() {
       </form>
 
       <h3>Your Inventory</h3>
+
+      {/* Category Filter */}
+      <label htmlFor="categoryFilter">Filter by Category:</label>
+      <select
+        id="categoryFilter"
+        value={selectedCategory}
+        onChange={(e) => setSelectedCategory(e.target.value)}
+      >
+        <option value="">All Categories</option>
+        {categories.map((cat) => (
+          <option key={cat} value={cat}>{cat}</option>
+        ))}
+      </select>
+
+      {/* Search Bar */}
+      
+      <input
+        type="text"
+        id="search"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        placeholder="Search by ingredient name"
+      />
+
       <ul>
-        {inventory.map((item, index) => {
+        {filteredInventory.map((item, index) => {
           const expirationStatus = getExpirationColor(item.expiration);
           return (
             <li key={index}>
               {item.name} - Expiration: {item.expiration} 
-              <span style={{ color: expirationStatus === '#FF0000' ? 'red' : expirationStatus === '#FFA500' ? 'orange' : 'green' }}>
+              <span style={{ color: expirationStatus === '#FF0000' ? 'red' : expirationStatus === '#FFA500' ? 'orange' : 'green' }} >
                 {' '} - {expirationStatus === '#FF0000' ? 'Expired' : expirationStatus === '#FFA500' ? 'Expiring soon' : 'Good'}
               </span>
               <br />
@@ -156,6 +217,20 @@ function Inventory() {
           );
         })}
       </ul>
+
+      <h3>Expiration Status Breakdown</h3>
+      <Bar data={expirationChartData} options={{
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Expiration Status of Ingredients'
+          },
+          legend: {
+            position: 'top',
+          }
+        }
+      }} />
 
       <h3>Calendar</h3>
       <FullCalendar
