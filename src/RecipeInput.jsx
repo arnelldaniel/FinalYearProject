@@ -7,7 +7,7 @@ export default function RecipeInput() {
   const [recipeName, setRecipeName] = useState('');
   const [recipeCategory, setRecipeCategory] = useState('');
   const [servingSize, setServingSize] = useState('');
-  const [ingredients, setIngredients] = useState([{ ingredient: '', quantity: '' }]);
+  const [ingredients, setIngredients] = useState([{ ingredient: '', quantity: '', unit: 'g' }]);
   const [recipeNotes, setRecipeNotes] = useState(''); // New state for notes
   const [difficultyLevel, setDifficultyLevel] = useState(''); // New state for difficulty level
   const [steps, setSteps] = useState(['']); // New state for steps (array of steps)
@@ -16,6 +16,9 @@ export default function RecipeInput() {
   // Get the current user's username from localStorage
   const currentUserUsername = localStorage.getItem('username');
   
+  // Units for ingredients (matching the inventory units)
+  const units = ['g', 'kg', 'ml', 'l', 'pcs'];
+
   // Function to handle ingredient changes
   const handleIngredientChange = (index, field, value) => {
     const updatedIngredients = [...ingredients];
@@ -32,7 +35,7 @@ export default function RecipeInput() {
 
   // Function to add a new ingredient input field
   const addIngredient = () => {
-    setIngredients([...ingredients, { ingredient: '', quantity: '' }]);
+    setIngredients([...ingredients, { ingredient: '', quantity: '', unit: 'g' }]);
   };
 
   // Function to add a new step input field
@@ -80,7 +83,7 @@ export default function RecipeInput() {
       setRecipeName('');
       setRecipeCategory('');
       setServingSize('');
-      setIngredients([{ ingredient: '', quantity: '' }]);
+      setIngredients([{ ingredient: '', quantity: '', unit: 'g' }]);
       setRecipeNotes(''); // Clear the notes field
       setDifficultyLevel(''); // Clear the difficulty level field
       setSteps(['']); // Clear the steps field
@@ -151,29 +154,30 @@ export default function RecipeInput() {
               />
               <label htmlFor={`quantity${index}`}>Quantity:</label>
               <input
-                type="text"
+                type="number"
                 id={`quantity${index}`}
                 value={ingredient.quantity}
                 onChange={(e) => handleIngredientChange(index, 'quantity', e.target.value)}
-                placeholder="e.g., 1 cup"
+                placeholder="e.g., 1"
                 required
               />
+              <label htmlFor={`unit${index}`}>Unit:</label>
+              <select
+                id={`unit${index}`}
+                value={ingredient.unit}
+                onChange={(e) => handleIngredientChange(index, 'unit', e.target.value)}
+                required
+              >
+                {units.map((unit) => (
+                  <option key={unit} value={unit}>{unit}</option>
+                ))}
+              </select>
             </div>
           ))}
         </div>
 
         <button type="button" onClick={addIngredient}>Add Ingredient</button>
 
-        {/* Notes Section */}
-        <label htmlFor="recipeNotes">Recipe Notes (Optional):</label>
-        <textarea
-          id="recipeNotes"
-          value={recipeNotes}
-          onChange={(e) => setRecipeNotes(e.target.value)}
-          placeholder="Enter any additional notes or tips for this recipe"
-        />
-
-        {/* Difficulty Level Section */}
         <label htmlFor="difficultyLevel">Difficulty Level:</label>
         <select
           id="difficultyLevel"
@@ -181,40 +185,33 @@ export default function RecipeInput() {
           onChange={(e) => setDifficultyLevel(e.target.value)}
           required
         >
-          <option value="">Select Difficulty</option>
+          <option value="">Select difficulty</option>
           <option value="easy">Easy</option>
           <option value="medium">Medium</option>
           <option value="hard">Hard</option>
         </select>
 
-        {/* Steps Section */}
-        <label htmlFor="steps">Recipe Steps:</label>
-        <div id="stepsContainer">
-          {steps.map((step, index) => (
-            <div key={index}>
-              <label htmlFor={`step${index}`}>Step {index + 1}:</label>
-              <textarea
-                id={`step${index}`}
-                value={step}
-                onChange={(e) => handleStepChange(index, e.target.value)}
-                placeholder={`Step ${index + 1}`}
-                required
-              />
-            </div>
-          ))}
-        </div>
+        <label htmlFor="steps">Steps:</label>
+        {steps.map((step, index) => (
+          <div key={index}>
+            <textarea
+              id={`step${index}`}
+              value={step}
+              onChange={(e) => handleStepChange(index, e.target.value)}
+              placeholder={`Step ${index + 1}`}
+              required
+            />
+            <button type="button" onClick={addStep}>Add Step</button>
+          </div>
+        ))}
 
-        <button type="button" onClick={addStep}>Add Step</button>
-
-        {/* Image Upload Section */}
         <label htmlFor="recipeImage">Recipe Image:</label>
-        <input 
-          type="file" 
-          id="recipeImage" 
-          onChange={handleImageChange} 
-          accept="image/*" 
+        <input
+          type="file"
+          id="recipeImage"
+          onChange={handleImageChange}
         />
-        
+
         <button type="submit">Submit Recipe</button>
       </form>
     </div>

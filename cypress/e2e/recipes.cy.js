@@ -49,16 +49,25 @@ describe('Recipes Page', () => {
   });
   it('adds ingredients to the shopping list', () => {
     cy.get('ul#recipeList li').first().within(() => {
-      cy.get('button').contains('Add to Shopping List').click();
+      cy.contains('button', 'Add Ingredients to Shopping List').click();
+    });
+  
+    cy.on('window:alert', (text) => {
+      expect(text).to.match(/(Missing ingredients added to shopping list|All ingredients are already covered)/);
     });
   });
 
   it('plans a recipe on a selected date', () => {
     const selectedDate = '2025-04-30';
     cy.get('input[type="date"]').type(selectedDate);
-    cy.get('button').contains('Plan on Calendar').first().click();
-    
-    // Check if a planned recipe appears for the selected date
+    cy.get('ul#recipeList li').first().within(() => {
+      cy.contains('button', 'Plan Recipe').click();
+    });
+  
+    cy.on('window:alert', (text) => {
+      expect(text).to.contain(`planned for ${selectedDate}`);
+    });
+  
     cy.get('h3').contains('Planned Recipes');
     cy.get('ul').should('contain', selectedDate);
   });

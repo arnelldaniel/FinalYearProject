@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from './firebase';
-import jsPDF from 'jspdf'; // 👈 Import jsPDF
+import jsPDF from 'jspdf';
 
 export default function Shopping() {
   const [shoppingList, setShoppingList] = useState([]);
@@ -20,7 +20,13 @@ export default function Shopping() {
         id: doc.id,
         ...doc.data(),
       }));
-      setShoppingList(list);
+
+      const updatedList = list.map(item => ({
+        ...item,
+        quantity: Number(item.quantity),
+      }));
+
+      setShoppingList(updatedList);
     } catch (error) {
       console.error('Error getting shopping list:', error);
       alert('Error loading shopping list. Please try again later.');
@@ -45,7 +51,8 @@ export default function Shopping() {
 
     let y = 30;
     shoppingList.forEach((item, index) => {
-      doc.text(`${index + 1}. ${item.name} - Quantity: ${item.quantity}`, 20, y);
+      const unit = item.unit ? item.unit : '';
+      doc.text(`${index + 1}. ${item.name} - Quantity: ${item.quantity} ${unit}`, 20, y);
       y += 10;
     });
 
@@ -59,14 +66,14 @@ export default function Shopping() {
   return (
     <div className="container">
       <h2>Shopping List</h2>
-      <button onClick={downloadPDF}>Download as PDF</button> {/* 👈 New button */}
+      <button onClick={downloadPDF}>Download as PDF</button>
       <ul id="shoppingList">
         {shoppingList.length === 0 ? (
           <li>No items found in your shopping list.</li>
         ) : (
           shoppingList.map(item => (
             <li key={item.id}>
-              {item.name} - Quantity: {item.quantity}
+              {item.name} - Quantity: {item.quantity} {item.unit}
               <button onClick={() => deleteItem(item.id)}>Delete</button>
             </li>
           ))
