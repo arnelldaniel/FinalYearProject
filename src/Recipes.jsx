@@ -181,33 +181,45 @@ export default function Recipes() {
   const makeRecipe = async (recipeId) => {
     const recipe = recipes.find(r => r.id === recipeId);
     if (!recipe) return;
-
+  
     const inventoryRef = collection(db, 'users', currentUserUsername, 'inventory');
     const inventorySnapshot = await getDocs(inventoryRef);
     const inventoryItems = inventorySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
+  
     const missingIngredients = [];
     const expiredIngredients = [];
-
+  
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
+  
     for (let ingredient of recipe.ingredients) {
+      const name = ingredient.ingredient.trim().toLowerCase();
+      const neededQuantity = parseFloat(ingredient.quantity);
+      const unit = ingredient.unit?.trim() || '';
+  
+      // Find the matching inventory item
       const itemInInventory = inventoryItems.find(item =>
-        item.name.toLowerCase() === ingredient.ingredient.toLowerCase()
+        item.name.trim().toLowerCase() === name && (item.unit?.trim() || '') === unit
       );
-
+  
       if (!itemInInventory) {
-        missingIngredients.push(ingredient.ingredient);
+        missingIngredients.push(`${neededQuantity} ${unit} of ${name}`);
       } else {
+        const availableQuantity = parseFloat(itemInInventory.quantity || 0);
         const expirationDate = new Date(itemInInventory.expiration);
         expirationDate.setHours(0, 0, 0, 0);
+  
+        // Check if the ingredient has expired
         if (expirationDate < today) {
-          expiredIngredients.push(ingredient.ingredient);
+          expiredIngredients.push(`${name} (expired)`);
+        } else if (availableQuantity < neededQuantity) {
+          const missingAmount = neededQuantity - availableQuantity;
+          missingIngredients.push(`${missingAmount} ${unit} of ${name}`);
         }
       }
     }
-
+  
+    // If there are missing or expired ingredients, alert the user
     if (missingIngredients.length > 0 || expiredIngredients.length > 0) {
       let message = '';
       if (missingIngredients.length > 0) {
@@ -219,23 +231,44 @@ export default function Recipes() {
       alert(message.trim());
       return;
     }
-
-    // All good: delete used ingredients from inventory
+  
+    // All good: remove the used ingredients from the inventory
     for (let ingredient of recipe.ingredients) {
+      const name = ingredient.ingredient.trim().toLowerCase();
+      const neededQuantity = parseFloat(ingredient.quantity);
+      const unit = ingredient.unit?.trim() || '';
+  
       const itemInInventory = inventoryItems.find(item =>
-        item.name.toLowerCase() === ingredient.ingredient.toLowerCase()
+        item.name.trim().toLowerCase() === name && (item.unit?.trim() || '') === unit
       );
+  
       if (itemInInventory) {
-        try {
-          await deleteDoc(doc(db, 'users', currentUserUsername, 'inventory', itemInInventory.id));
-        } catch (error) {
-          console.error('Error removing ingredient from inventory:', error);
+        const availableQuantity = parseFloat(itemInInventory.quantity || 0);
+        const remainingQuantity = availableQuantity - neededQuantity;
+  
+        // If the ingredient is used up, delete it from the inventory
+        if (remainingQuantity <= 0) {
+          try {
+            await deleteDoc(doc(db, 'users', currentUserUsername, 'inventory', itemInInventory.id));
+          } catch (error) {
+            console.error('Error removing ingredient from inventory:', error);
+          }
+        } else {
+          // Otherwise, update the inventory with the remaining quantity
+          try {
+            await updateDoc(doc(db, 'users', currentUserUsername, 'inventory', itemInInventory.id), {
+              quantity: remainingQuantity,
+            });
+          } catch (error) {
+            console.error('Error updating inventory:', error);
+          }
         }
       }
     }
-
+  
     alert(`Recipe "${recipe.name}" has been made! Ingredients removed from inventory.`);
   };
+  
 
   const formatCategoryName = (category) => {
     return category
