@@ -6,15 +6,19 @@ describe('Shopping List Page', () => {
     cy.visit(baseUrl);
   });
 
+  it('adds an ingredient to the shopping list', () => {
+    // First, navigate to the page where ingredients are added (for example, the Recipes page)
+    cy.visit('http://localhost:5173/Recipes'); // Adjust this URL to match the actual recipe page route
+
+    // Simulate adding an ingredient to the shopping list (e.g., clicking a button to add the ingredient)
+    cy.get('ul#recipeList li').first().contains('button', 'Add Ingredients to Shopping List').click(); // Click the button to add ingredients to shopping list
+    cy.wait(500); // Wait for the action to complete and update the shopping list in Firebase
+  });
+
   it('checks if the shopping list loads correctly', () => {
     cy.get('#shoppingList').should('exist'); // Ensure the shopping list exists
     cy.get('#shoppingList li').should('have.length.greaterThan', 0); // There should be at least one item
   });
-
-  it('displays shopping list items correctly', () => {
-      cy.get('#shoppingList li').first().should('exist'); // Ensure at least one item exists
-    });
-    
 
   it('fetches shopping list after page reload', () => {
     cy.reload(); // Reload the page
