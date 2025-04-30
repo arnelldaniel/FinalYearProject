@@ -45,29 +45,41 @@ describe('Inventory Page', () => {
   });
 
   it('shows expiration color label based on date', () => {
-    const expiredDate = '2020-01-01';
+    // Get the current date and subtract 2 days to simulate an expired item
+    const expiredDate = new Date();
+    expiredDate.setDate(expiredDate.getDate() - 2); // Subtract 2 days from today
+    const formattedDate = expiredDate.toISOString().split('T')[0]; // Format the date as YYYY-MM-DD
+    
     cy.get('input#ingredientName').type('Old Cheese');
-    cy.get('input#expirationDate').type(expiredDate);
+    cy.get('input#expirationDate').type(formattedDate); // Use the calculated expired date
     cy.get('select#category').select('Dairy');
     cy.get('input#quantity').clear().type(1); // Added quantity field interaction
     cy.get('select#unit').select('g');
     cy.get('button[type="submit"]').click();
-
+  
     // After reload, the color label should be red (Expired)
     cy.contains('Old Cheese')
       .parent()
       .should('contain.text', 'Expired');
   });
+  
 
-  it('can delete an inventory item', () => {
-    // Click the delete button of the first item
-    cy.contains('button', 'Delete').first().click();
+  it('can delete an inventory item (Old Cheese)', () => {
+    // First, ensure the "Old Cheese" item is present in the list
+    cy.contains('Old Cheese').should('exist');
   
-    // Wait for Firebase to update before checking if the item is gone
-    cy.wait(2000); // Adjust the wait time if necessary for Firebase to reflect the change
+    // Click the delete button for the "Old Cheese" item
+    cy.contains('Old Cheese')
+      .parent() // Find the parent element that contains the "Old Cheese" item
+      .find('button')
+      .contains('Delete') // Find the delete button inside this parent element
+      .click();
   
-    // Ensure the item is deleted and no longer in the DOM
-    cy.get('li').should('have.length', 1); // Ensure the list is empty or adjust the check as needed
+    // Wait for Firebase to update and for the item to be removed
+    cy.wait(2000); // Adjust wait time if necessary for Firebase to reflect the change
+  
+    // Ensure that the "Old Cheese" item is no longer in the list
+    cy.contains('Old Cheese').should('not.exist'); // Verify "Old Cheese" has been removed
   });
 
   it('displays calendar with events', () => {
