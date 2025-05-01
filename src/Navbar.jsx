@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom'; // Use useNavigate instead of useHistory
+import { Link, Outlet, useNavigate } from 'react-router-dom'; 
 import './Navbar.css';
 
 export default function Navbar() {
@@ -7,9 +7,9 @@ export default function Navbar() {
     localStorage.getItem('darkMode') === 'true'
   );
 
-  const navigate = useNavigate(); // Use useNavigate for navigation
+  const navigate = useNavigate(); 
 
-  // Toggle dark mode class on the body element
+  
   useEffect(() => {
     if (darkMode) {
       document.body.classList.add('dark-mode');
@@ -20,11 +20,11 @@ export default function Navbar() {
   }, [darkMode]);
 
   const handleLogout = () => {
-    // Remove username from localStorage to "log out" the user
+    
     localStorage.removeItem('username');
     
-    // Redirect the user to the login page after logout
-    navigate('/'); // Change '/login' to the actual login route in your app
+    
+    navigate('/'); 
   };
 
   return (
@@ -37,18 +37,18 @@ export default function Navbar() {
           <Link to="/shopping" className="nav-link">Shopping</Link>
         </div>
 
-        {/* Dark Mode Toggle Button */}
+        
         <button onClick={() => setDarkMode(!darkMode)} className="dark-mode-toggle">
           {darkMode ? 'Light Mode' : 'Dark Mode'}
         </button>
 
-        {/* Logout Button */}
+        
         <button onClick={handleLogout} className="logout-button">
           Logout
         </button>
       </nav>
 
-      {/* Outlet here to render nested routes */}
+      
       <Outlet />
     </div>
   );

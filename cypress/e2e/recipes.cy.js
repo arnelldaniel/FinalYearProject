@@ -1,16 +1,16 @@
 describe('Recipes Page', () => {
-  const baseUrl = 'http://localhost:5173/Recipes'; // Adjust route if different
+  const baseUrl = 'http://localhost:5173/Recipes'; 
 
   beforeEach(() => {
-    localStorage.setItem('username', 'testuser'); // Set test user
+    localStorage.setItem('username', 'testuser'); 
     cy.visit(baseUrl);
-    cy.get('#categoryFilter').select('All Categories'); // Clear category filter before each test
-    cy.get('#difficultyFilter').select(''); // Clear difficulty filter
+    cy.get('#categoryFilter').select('All Categories');
+    cy.get('#difficultyFilter').select(''); 
   });
 
   it('checks if the recipe list loads correctly', () => {
-    cy.get('ul#recipeList').should('exist'); // Ensure the recipe list exists
-    cy.get('ul#recipeList li').should('have.length.greaterThan', 0); // There should be at least one recipe
+    cy.get('ul#recipeList').should('exist'); 
+    cy.get('ul#recipeList li').should('have.length.greaterThan', 0); 
   });
   
   
@@ -49,7 +49,7 @@ describe('Recipes Page', () => {
     });
   });
   it('adds ingredients to the shopping list', () => {
-    // Find the first recipe and click the "Add Ingredients to Shopping List" button
+    
     cy.get('ul#recipeList li').first().within(() => {
       cy.contains('button', 'Add Ingredients to Shopping List').click();
     });
@@ -72,22 +72,22 @@ describe('Recipes Page', () => {
   });
 
   it('displays "No recipes found" when search results do not match any recipes', () => {
-    cy.get('#searchInput').type('NonExistentRecipe'); // Type the search query
-    cy.get('#searchInput').type('{enter}'); // Press Enter to trigger the search
+    cy.get('#searchInput').type('NonExistentRecipe');
+    cy.get('#searchInput').type('{enter}'); 
   
-    // Ensure that "No recipes found" message is displayed
+    
     cy.contains('No recipes found').should('be.visible');
   });
   
 
   it('displays planned recipes correctly', () => {
-    cy.get('h3').contains('Planned Recipes'); // Ensure the header exists
-    cy.get('ul').should('have.length.greaterThan', 0); // Ensure there are planned recipes listed
+    cy.get('h3').contains('Planned Recipes'); 
+    cy.get('ul').should('have.length.greaterThan', 0); 
   });
  
 
   it('ensures the category dropdown displays options correctly', () => {
     cy.get('#categoryFilter').should('exist');
-    cy.get('#categoryFilter option').should('have.length.greaterThan', 1); // Check if there are more than one option
+    cy.get('#categoryFilter option').should('have.length.greaterThan', 1); 
   });
 });

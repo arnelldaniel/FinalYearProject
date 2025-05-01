@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { db } from './firebase'; // Assuming Firebase config is correctly initialized in firebase.js
+import { db } from './firebase'; 
 import { collection, addDoc } from 'firebase/firestore';
 
 export default function RecipeInput() {
@@ -8,54 +8,54 @@ export default function RecipeInput() {
   const [recipeCategory, setRecipeCategory] = useState('');
   const [servingSize, setServingSize] = useState('');
   const [ingredients, setIngredients] = useState([{ ingredient: '', quantity: '', unit: 'g' }]);
-  const [recipeNotes, setRecipeNotes] = useState(''); // New state for notes
-  const [difficultyLevel, setDifficultyLevel] = useState(''); // New state for difficulty level
-  const [steps, setSteps] = useState(['']); // New state for steps (array of steps)
-  const [recipeImage, setRecipeImage] = useState(null); // State for the image (base64)
+  const [recipeNotes, setRecipeNotes] = useState(''); 
+  const [difficultyLevel, setDifficultyLevel] = useState(''); 
+  const [steps, setSteps] = useState(['']); 
+  const [recipeImage, setRecipeImage] = useState(null); 
 
-  // Get the current user's username from localStorage
+  
   const currentUserUsername = localStorage.getItem('username');
   
-  // Units for ingredients (matching the inventory units)
+  
   const units = ['g', 'kg', 'ml', 'l', 'pcs'];
 
-  // Function to handle ingredient changes
+  
   const handleIngredientChange = (index, field, value) => {
     const updatedIngredients = [...ingredients];
     updatedIngredients[index][field] = value;
     setIngredients(updatedIngredients);
   };
 
-  // Function to handle step changes
+  
   const handleStepChange = (index, value) => {
     const updatedSteps = [...steps];
     updatedSteps[index] = value;
     setSteps(updatedSteps);
   };
 
-  // Function to add a new ingredient input field
+  
   const addIngredient = () => {
     setIngredients([...ingredients, { ingredient: '', quantity: '', unit: 'g' }]);
   };
 
-  // Function to add a new step input field
+ 
   const addStep = () => {
     setSteps([...steps, '']);
   };
 
-  // Handle image file change and convert it to base64
+ 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setRecipeImage(reader.result);  // Save the base64 string
+        setRecipeImage(reader.result); 
       };
-      reader.readAsDataURL(file);  // Convert image to base64
+      reader.readAsDataURL(file); 
     }
   };
 
-  // Function to handle form submission
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -65,29 +65,29 @@ export default function RecipeInput() {
     }
 
     try {
-      // Add recipe to Firestore under the current user's subcollection
+      
       const userRecipesRef = collection(db, 'users', currentUserUsername, 'recipes');
       await addDoc(userRecipesRef, {
         name: recipeName,
         category: recipeCategory,
         servings: servingSize,
         ingredients: ingredients,
-        notes: recipeNotes, // Include notes when adding the recipe
-        difficulty: difficultyLevel, // Include difficulty level
-        steps: steps, // Include steps
-        image: recipeImage, // Save the base64 image string
+        notes: recipeNotes, 
+        difficulty: difficultyLevel,
+        steps: steps, 
+        image: recipeImage, 
       });
 
       alert('Recipe added successfully!');
-      // Clear the form after submission
+      
       setRecipeName('');
       setRecipeCategory('');
       setServingSize('');
       setIngredients([{ ingredient: '', quantity: '', unit: 'g' }]);
-      setRecipeNotes(''); // Clear the notes field
-      setDifficultyLevel(''); // Clear the difficulty level field
-      setSteps(['']); // Clear the steps field
-      setRecipeImage(null); // Clear the image state
+      setRecipeNotes(''); 
+      setDifficultyLevel(''); 
+      setSteps(['']); 
+      setRecipeImage(null); 
     } catch (error) {
       console.error('Error adding recipe: ', error);
     }

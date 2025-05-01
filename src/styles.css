@@ -1,6 +1,6 @@
 
 
-/* Wrap everything in this class */
+
 .login-register-page {
   height: 100vh;
   background-color: #f4f7fc;
@@ -13,24 +13,24 @@
   
 }
 
-/* Container for the forms */
+
 .login-register-page .container {
   background-color: white;
   padding: 20px;
   width: 100%;
-  max-width: 400px;  /* Set max-width */
+  max-width: 400px;  
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
 }
 
-/* Title styles */
+
 .login-register-page h2 {
   text-align: center;
   color: #333;
   margin-bottom: 20px;
 }
 
-/* Input field styling */
+
 .login-register-page input {
   width: 100%;
   padding: 10px;
@@ -40,7 +40,7 @@
   box-sizing: border-box;
 }
 
-/* Button styling */
+
 .login-register-page button {
   width: 100%;
   padding: 10px;
@@ -57,7 +57,7 @@
   background-color: #45a049;
 }
 
-/* Switch between login/register */
+
 .login-register-page .form-switch {
   text-align: center;
   margin-top: 10px;
@@ -72,7 +72,7 @@
   text-decoration: underline;
 }
 
-/* Extra form container styling */
+
 .login-register-page .form-container {
   margin-bottom: 20px;
 }
@@ -90,7 +90,7 @@
   border: 1px solid #e0e0e0;
 }
 
-/* Header styling */
+
 h2 {
   text-align: center;
   color: #4caf50;
@@ -98,7 +98,7 @@ h2 {
   margin-bottom: 25px;
 }
 
-/* Form styling */
+
 form {
   display: flex;
   flex-direction: column;
@@ -145,7 +145,7 @@ button:hover {
   transform: scale(1.03);
 }
 
-/* Inventory list styling */
+
 h3 {
   text-align: left;
   color: #333;
@@ -199,7 +199,7 @@ li button:hover {
   transform: scale(1.05);
 }
 
-/* Navbar styling */
+
 .navbar {
   background: linear-gradient(to right, #4caf50, #008cba);
   padding: 1rem;
@@ -269,12 +269,12 @@ li button:hover {
 }
 
 .recipesPage p {
-  display: block; /* Make category and serving size go vertically */
+  display: block; 
   margin-bottom: 10px;
 }
 
 .recipesPage .ingredients li {
-  display: block; /* Ensure ingredients are listed vertically */
+  display: block; 
 }
 
 .recipesPage button {
@@ -299,7 +299,7 @@ li button:hover {
 }
 
 
-/* Global dark mode styling */
+
 body.dark-mode {
   background-color: #121212;
   color: white;

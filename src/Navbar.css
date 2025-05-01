@@ -1,4 +1,4 @@
-/* General reset and body styling */
+
 * {
   margin: 0;
   padding: 0;
@@ -6,8 +6,8 @@
 }
 
 html, body {
-  width: 100%;  /* Full width of the screen */
-  height: 100%; /* Full height of the screen */
+  width: 100%;  
+  height: 100%; 
 }
 
 body {
@@ -17,25 +17,25 @@ body {
   line-height: 1.6;
 }
 
-/* Navbar styling */
+
 .navbar {
   background: linear-gradient(to right, #4caf50, #008cba);
   padding: 1rem;
   position: sticky;
   top: 0;
-  width: 100%; /* Full width of the screen */
+  width: 100%; 
   z-index: 1000;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Nav links container styling */
+
 .nav-container {
   display: flex;
   justify-content: center;
   gap: 2rem;
 }
 
-/* Nav link styling */
+
 .nav-link {
   color: white;
   text-decoration: none;

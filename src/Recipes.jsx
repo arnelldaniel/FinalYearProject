@@ -129,7 +129,7 @@ export default function Recipes() {
         const neededQuantity = parseFloat(ingredient.quantity);
         const unit = ingredient.unit?.trim() || '';
   
-        // Check inventory to determine remaining quantity needed
+       
         const itemInInventory = inventoryItems.find(item =>
           item.name.trim().toLowerCase() === name && (item.unit?.trim() || '') === unit
         );
@@ -146,7 +146,7 @@ export default function Recipes() {
         }
   
         if (quantityToAdd > 0) {
-          // Check if already in shopping list
+          
           const existingShoppingItem = shoppingListItems.find(item =>
             item.name.trim().toLowerCase() === name && (item.unit?.trim() || '') === unit
           );
@@ -197,7 +197,7 @@ export default function Recipes() {
       const neededQuantity = parseFloat(ingredient.quantity);
       const unit = ingredient.unit?.trim() || '';
   
-      // Find the matching inventory item
+      
       const itemInInventory = inventoryItems.find(item =>
         item.name.trim().toLowerCase() === name && (item.unit?.trim() || '') === unit
       );
@@ -209,7 +209,7 @@ export default function Recipes() {
         const expirationDate = new Date(itemInInventory.expiration);
         expirationDate.setHours(0, 0, 0, 0);
   
-        // Check if the ingredient has expired
+        
         if (expirationDate < today) {
           expiredIngredients.push(`${name} (expired)`);
         } else if (availableQuantity < neededQuantity) {
@@ -219,7 +219,7 @@ export default function Recipes() {
       }
     }
   
-    // If there are missing or expired ingredients, alert the user
+    
     if (missingIngredients.length > 0 || expiredIngredients.length > 0) {
       let message = '';
       if (missingIngredients.length > 0) {
@@ -232,7 +232,7 @@ export default function Recipes() {
       return;
     }
   
-    // All good: remove the used ingredients from the inventory
+    
     for (let ingredient of recipe.ingredients) {
       const name = ingredient.ingredient.trim().toLowerCase();
       const neededQuantity = parseFloat(ingredient.quantity);
@@ -246,7 +246,7 @@ export default function Recipes() {
         const availableQuantity = parseFloat(itemInInventory.quantity || 0);
         const remainingQuantity = availableQuantity - neededQuantity;
   
-        // If the ingredient is used up, delete it from the inventory
+        
         if (remainingQuantity <= 0) {
           try {
             await deleteDoc(doc(db, 'users', currentUserUsername, 'inventory', itemInInventory.id));
@@ -254,7 +254,7 @@ export default function Recipes() {
             console.error('Error removing ingredient from inventory:', error);
           }
         } else {
-          // Otherwise, update the inventory with the remaining quantity
+          
           try {
             await updateDoc(doc(db, 'users', currentUserUsername, 'inventory', itemInInventory.id), {
               quantity: remainingQuantity,

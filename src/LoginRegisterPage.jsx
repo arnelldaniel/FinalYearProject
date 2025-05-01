@@ -12,12 +12,12 @@ const LoginRegisterPage = () => {
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // Toggle password visibility for registration form
+ 
   const toggleRegisterPasswordVisibility = () => {
     setShowRegisterPassword(!showRegisterPassword);
   };
 
-  // Toggle password visibility for login form
+  
   const toggleLoginPasswordVisibility = () => {
     setShowLoginPassword(!showLoginPassword);
   };
@@ -42,7 +42,7 @@ const LoginRegisterPage = () => {
       await setDoc(userRef, { username: registerUsername, password: registerPassword });
       alert('Registration successful');
 
-      // Clear form after successful registration
+      
       setRegisterUsername('');
       setRegisterPassword('');
     } catch (error) {
@@ -71,7 +71,7 @@ const LoginRegisterPage = () => {
         });
       }
 
-      // Clear form after successful login
+      
       setLoginUsername('');
       setLoginPassword('');
     } catch (error) {
@@ -82,11 +82,11 @@ const LoginRegisterPage = () => {
   return (
     <div className="login-register-page">
       <div className="container">
-        {/* Conditional rendering: Register form or Login form */}
+        
         {!isLogin ? (
           <div className="form-container" id="registerFormContainer">
             <h2>Register</h2>
-            {/* Username input for registration */}
+        
             <input
               type="text"
               value={registerUsername}
@@ -94,7 +94,7 @@ const LoginRegisterPage = () => {
               placeholder="Username"
               required
             />
-            {/* Password input with visibility toggle for registration */}
+            
             <div className="password-input">
               <input
                 type={showRegisterPassword ? 'text' : 'password'}
@@ -107,9 +107,9 @@ const LoginRegisterPage = () => {
                 {showRegisterPassword ? 'Hide' : 'Show'} Password
               </button>
             </div>
-            {/* Register button */}
+            
             <button onClick={handleRegister}>Register</button>
-            {/* Switch to Login form */}
+           
             <div className="form-switch">
               <p>
                 Already have an account?{' '}
@@ -117,7 +117,7 @@ const LoginRegisterPage = () => {
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    setIsLogin(true);  // Switch to Login form
+                    setIsLogin(true);  
                   }}
                 >
                   Login
@@ -128,7 +128,7 @@ const LoginRegisterPage = () => {
         ) : (
           <div className="form-container" id="loginFormContainer">
             <h2>Login</h2>
-            {/* Username input for login */}
+            
             <input
               type="text"
               value={loginUsername}
@@ -136,7 +136,7 @@ const LoginRegisterPage = () => {
               placeholder="Username"
               required
             />
-            {/* Password input with visibility toggle for login */}
+            
             <div className="password-input">
               <input
                 type={showLoginPassword ? 'text' : 'password'}
@@ -149,9 +149,9 @@ const LoginRegisterPage = () => {
                 {showLoginPassword ? 'Hide' : 'Show'} Password
               </button>
             </div>
-            {/* Login button */}
+            
             <button onClick={handleLogin}>Login</button>
-            {/* Switch to Register form */}
+            
             <div className="form-switch">
               <p>
                 Don’t have an account?{' '}
@@ -159,7 +159,7 @@ const LoginRegisterPage = () => {
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    setIsLogin(false);  // Switch to Register form
+                    setIsLogin(false);  
                   }}
                 >
                   Register
