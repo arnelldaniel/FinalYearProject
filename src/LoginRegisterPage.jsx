@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { auth, db } from './firebase';
+import { db } from './firebase';
 import { setDoc, doc, collection, query, where, getDocs } from 'firebase/firestore';
 import './styles.css';
 
@@ -9,18 +9,42 @@ const LoginRegisterPage = () => {
   const [registerPassword, setRegisterPassword] = useState('');
   const [loginUsername, setLoginUsername] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+
+  // Toggle password visibility for registration form
+  const toggleRegisterPasswordVisibility = () => {
+    setShowRegisterPassword(!showRegisterPassword);
+  };
+
+  // Toggle password visibility for login form
+  const toggleLoginPasswordVisibility = () => {
+    setShowLoginPassword(!showLoginPassword);
+  };
 
   const handleRegister = async () => {
-    // Validate if both username and password are provided
     if (!registerUsername || !registerPassword) {
       alert('Please fill in both username and password fields.');
       return;
     }
-  
+
     try {
-      const userRef = doc(db, 'users', registerUsername);  // Create a document using the username as the ID
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('username', '==', registerUsername));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        alert('Username is already taken. Please choose another one.');
+        return;
+      }
+
+      const userRef = doc(db, 'users', registerUsername);
       await setDoc(userRef, { username: registerUsername, password: registerPassword });
       alert('Registration successful');
+
+      // Clear form after successful registration
+      setRegisterUsername('');
+      setRegisterPassword('');
     } catch (error) {
       alert('Error: ' + error.message);
     }
@@ -46,6 +70,10 @@ const LoginRegisterPage = () => {
           }
         });
       }
+
+      // Clear form after successful login
+      setLoginUsername('');
+      setLoginPassword('');
     } catch (error) {
       alert('Error: ' + error.message);
     }
@@ -54,9 +82,11 @@ const LoginRegisterPage = () => {
   return (
     <div className="login-register-page">
       <div className="container">
+        {/* Conditional rendering: Register form or Login form */}
         {!isLogin ? (
           <div className="form-container" id="registerFormContainer">
             <h2>Register</h2>
+            {/* Username input for registration */}
             <input
               type="text"
               value={registerUsername}
@@ -64,14 +94,22 @@ const LoginRegisterPage = () => {
               placeholder="Username"
               required
             />
-            <input
-              type="password"
-              value={registerPassword}
-              onChange={(e) => setRegisterPassword(e.target.value)}
-              placeholder="Password"
-              required
-            />
+            {/* Password input with visibility toggle for registration */}
+            <div className="password-input">
+              <input
+                type={showRegisterPassword ? 'text' : 'password'}
+                value={registerPassword}
+                onChange={(e) => setRegisterPassword(e.target.value)}
+                placeholder="Password"
+                required
+              />
+              <button onClick={toggleRegisterPasswordVisibility}>
+                {showRegisterPassword ? 'Hide' : 'Show'} Password
+              </button>
+            </div>
+            {/* Register button */}
             <button onClick={handleRegister}>Register</button>
+            {/* Switch to Login form */}
             <div className="form-switch">
               <p>
                 Already have an account?{' '}
@@ -79,7 +117,7 @@ const LoginRegisterPage = () => {
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    setIsLogin(true);
+                    setIsLogin(true);  // Switch to Login form
                   }}
                 >
                   Login
@@ -90,6 +128,7 @@ const LoginRegisterPage = () => {
         ) : (
           <div className="form-container" id="loginFormContainer">
             <h2>Login</h2>
+            {/* Username input for login */}
             <input
               type="text"
               value={loginUsername}
@@ -97,14 +136,22 @@ const LoginRegisterPage = () => {
               placeholder="Username"
               required
             />
-            <input
-              type="password"
-              value={loginPassword}
-              onChange={(e) => setLoginPassword(e.target.value)}
-              placeholder="Password"
-              required
-            />
+            {/* Password input with visibility toggle for login */}
+            <div className="password-input">
+              <input
+                type={showLoginPassword ? 'text' : 'password'}
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                placeholder="Password"
+                required
+              />
+              <button onClick={toggleLoginPasswordVisibility}>
+                {showLoginPassword ? 'Hide' : 'Show'} Password
+              </button>
+            </div>
+            {/* Login button */}
             <button onClick={handleLogin}>Login</button>
+            {/* Switch to Register form */}
             <div className="form-switch">
               <p>
                 Don’t have an account?{' '}
@@ -112,7 +159,7 @@ const LoginRegisterPage = () => {
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    setIsLogin(false);
+                    setIsLogin(false);  // Switch to Register form
                   }}
                 >
                   Register
