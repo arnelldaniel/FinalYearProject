@@ -24,7 +24,7 @@ describe('Inventory Page', () => {
     });
   });
 
-  it('can type in the form and add an item (mocked success)', () => {
+  it('can type in the form and add an item', () => {
     const testName = 'Milk';
     const testDate = new Date().toISOString().split('T')[0]; 
     const testQuantity = 2;
